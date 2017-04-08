@@ -13,6 +13,7 @@
 		246706051E17D2F400A2D037 /* TabbedContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246706031E17D2F400A2D037 /* TabbedContent.swift */; };
 		246706081E17D32B00A2D037 /* TabbedMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246706071E17D32B00A2D037 /* TabbedMenu.swift */; };
 		246706451E17D48800A2D037 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246706441E17D48800A2D037 /* Extensions.swift */; };
+		246DC9071E98608500D68EFF /* PagedContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246DC9061E98608500D68EFF /* PagedContentViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +36,7 @@
 		246706031E17D2F400A2D037 /* TabbedContent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabbedContent.swift; sourceTree = "<group>"; };
 		246706071E17D32B00A2D037 /* TabbedMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabbedMenu.swift; sourceTree = "<group>"; };
 		246706441E17D48800A2D037 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		246DC9061E98608500D68EFF /* PagedContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PagedContentViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +84,7 @@
 				246706031E17D2F400A2D037 /* TabbedContent.swift */,
 				246705ED1E17D0CB00A2D037 /* Info.plist */,
 				246706441E17D48800A2D037 /* Extensions.swift */,
+				246DC9061E98608500D68EFF /* PagedContentViewController.swift */,
 			);
 			path = PagedContent;
 			sourceTree = "<group>";
@@ -208,6 +211,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				246DC9071E98608500D68EFF /* PagedContentViewController.swift in Sources */,
 				246706081E17D32B00A2D037 /* TabbedMenu.swift in Sources */,
 				246706451E17D48800A2D037 /* Extensions.swift in Sources */,
 				246706051E17D2F400A2D037 /* TabbedContent.swift in Sources */,
@@ -344,6 +348,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = "$(SRCROOT)/PagedContent/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = de.halilgursoy.PagedContent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -365,6 +370,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = "$(SRCROOT)/PagedContent/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = de.halilgursoy.PagedContent;
 				PRODUCT_NAME = "$(TARGET_NAME)";

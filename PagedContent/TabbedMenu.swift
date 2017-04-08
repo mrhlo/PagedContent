@@ -4,26 +4,18 @@
 
 import UIKit
 
-public typealias TabbedMenuTheme = TabbedMenuView.Theme
-
-fileprivate typealias Tab = TabbedMenuViewController.Tab
-
-protocol TabController: class {
+public protocol TabController: class {
     func indexChanged(to index: Int)
-    func select(index: Int)
+    func select(index: Int, animated: Bool)
 }
 
 public class TabbedMenuViewController: UIViewController {
-    struct Tab {
-        let title: String
-        let view: UIView?
-    }
     
     fileprivate let tabbedMenuView: TabbedMenuView
     
-    weak var contentController: TabController?
+    public weak var contentController: TabController?
     
-    var tabs = [Tab]() {
+    public var tabs = [PagedContentTab]() {
         didSet {
             tabbedMenuView.setup(tabs: tabs)
         }
@@ -31,7 +23,16 @@ public class TabbedMenuViewController: UIViewController {
     
     required public init?(coder aDecoder: NSCoder) {
         tabbedMenuView = TabbedMenuView(coder: aDecoder)!
+        
         super.init(coder: aDecoder)
+        
+        tabbedMenuView.controller = self
+    }
+    
+    public init() {
+        tabbedMenuView = TabbedMenuView(frame: .zero)
+        
+        super.init(nibName: nil, bundle: nil)
         
         tabbedMenuView.controller = self
     }
@@ -40,64 +41,90 @@ public class TabbedMenuViewController: UIViewController {
         view = tabbedMenuView
     }
     
-    public func setTheme(_ theme: TabbedMenuTheme) {
+    public func setTheme(_ theme: PagedContentTabTheme) {
         tabbedMenuView.theme = theme
     }
 }
 
 extension TabbedMenuViewController: TabController {
-    func indexChanged(to index: Int) {
-        contentController?.select(index: index)
+    public func indexChanged(to index: Int) {
+        contentController?.select(index: index, animated: true)
     }
     
-    func select(index: Int) {
-        tabbedMenuView.select(index: index)
+    public func select(index: Int, animated: Bool) {
+        tabbedMenuView.select(index: index, animated: animated)
+    }
+}
+
+public struct PagedContentTabTheme {
+    let backgroundColor: UIColor
+    let textColor: UIColor
+    let selectedColors: [UIColor]
+    let selectedColor: UIColor?
+    let font: UIFont
+    let buttonPadding: CGFloat
+    let borderColor: UIColor
+    let isFullWidth: Bool
+    
+    public static let defaultTheme: PagedContentTabTheme = PagedContentTabTheme(
+        backgroundColor: .white,
+        textColor: .black,
+        selectedColor: .blue,
+        font: UIFont.systemFont(ofSize: 14),
+        buttonPadding: 30,
+        borderColor: UIColor(red: 210/255.0, green: 210/255.0, blue: 210/255.0, alpha: 1.0),
+        isFullWidth: false
+    )
+    
+    public init(backgroundColor: UIColor = PagedContentTabTheme.defaultTheme.backgroundColor,
+                textColor: UIColor = PagedContentTabTheme.defaultTheme.textColor,
+                selectedColor: UIColor = PagedContentTabTheme.defaultTheme.selectedColor!,
+                font: UIFont = PagedContentTabTheme.defaultTheme.font,
+                buttonPadding: CGFloat = PagedContentTabTheme.defaultTheme.buttonPadding,
+                borderColor: UIColor = PagedContentTabTheme.defaultTheme.borderColor,
+                isFullWidth: Bool = PagedContentTabTheme.defaultTheme.isFullWidth) {
+        
+        self.backgroundColor = backgroundColor
+        self.textColor = textColor
+        self.selectedColor = selectedColor
+        self.selectedColors = [selectedColor]
+        self.font = font
+        self.buttonPadding = buttonPadding
+        self.borderColor = borderColor
+        self.isFullWidth = isFullWidth
+        
+    }
+    
+    public init(backgroundColor: UIColor = PagedContentTabTheme.defaultTheme.backgroundColor,
+                textColor: UIColor = PagedContentTabTheme.defaultTheme.textColor,
+                selectedColors: [UIColor],
+                font: UIFont = PagedContentTabTheme.defaultTheme.font,
+                buttonPadding: CGFloat = PagedContentTabTheme.defaultTheme.buttonPadding,
+                borderColor: UIColor = PagedContentTabTheme.defaultTheme.borderColor,
+                isFullWidth: Bool = PagedContentTabTheme.defaultTheme.isFullWidth) {
+        
+        self.backgroundColor = backgroundColor
+        self.textColor = textColor
+        self.selectedColors = selectedColors
+        self.font = font
+        self.buttonPadding = buttonPadding
+        self.borderColor = borderColor
+        self.selectedColor = nil
+        self.isFullWidth = isFullWidth
     }
 }
 
 
 public class TabbedMenuView: UIView {
-    public struct Theme {
-        let backgroundColor: UIColor
-        let textColor: UIColor
-        let selectedColor: UIColor
-        let font: UIFont
-        let buttonPadding: CGFloat
-        let borderColor: UIColor
-        
-        static let defaultTheme: Theme = Theme(
-            backgroundColor: .white,
-            textColor: .black,
-            selectedColor: .blue,
-            font: UIFont.systemFont(ofSize: 14),
-            buttonPadding: 30,
-            borderColor: UIColor(red: 210/255.0, green: 210/255.0, blue: 210/255.0, alpha: 1.0)
-        )
-        
-        init(backgroundColor: UIColor = Theme.defaultTheme.backgroundColor,
-             textColor: UIColor = Theme.defaultTheme.textColor,
-             selectedColor: UIColor = Theme.defaultTheme.selectedColor,
-             font: UIFont = Theme.defaultTheme.font,
-             buttonPadding: CGFloat = Theme.defaultTheme.buttonPadding,
-             borderColor: UIColor = Theme.defaultTheme.borderColor) {
-            
-            self.backgroundColor = backgroundColor
-            self.textColor = textColor
-            self.selectedColor = selectedColor
-            self.font = font
-            self.buttonPadding = buttonPadding
-            self.borderColor = borderColor
-        }
-    }
     
     var controller: TabbedMenuViewController!
     
     fileprivate let scrollView = UIScrollView(frame: CGRect.zero)
     fileprivate let selectedBottomLine = UIView(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 0, height: 3)))
     
-    fileprivate var tabs = [Tab]()
+    fileprivate var tabs = [PagedContentTab]()
     fileprivate var buttons = [UIButton]()
-    fileprivate var theme = Theme.defaultTheme {
+    fileprivate var theme = PagedContentTabTheme.defaultTheme {
         didSet {
             setupUI(withTheme: theme)
         }
@@ -134,8 +161,8 @@ public class TabbedMenuView: UIView {
             $0.frame = frame
         }
         
-        if contentWidth < frame.width && !tabs.isEmpty {
-            adjustButtonSizes()
+        if theme.isFullWidth {
+            adjustButtonSizesForFullWidth()
         }
         
         selectedBottomLine.frame.origin.y = scrollView.frame.height - selectedBottomLine.frame.height
@@ -158,7 +185,7 @@ public class TabbedMenuView: UIView {
         setupUI(withTheme: theme)
     }
     
-    fileprivate func setupUI(withTheme theme: Theme) {
+    fileprivate func setupUI(withTheme theme: PagedContentTabTheme) {
         scrollView.backgroundColor = UIColor.clear
         backgroundColor = theme.backgroundColor
         
@@ -168,7 +195,7 @@ public class TabbedMenuView: UIView {
         selectedBottomLine.backgroundColor = theme.selectedColor
     }
     
-    fileprivate func setup(tabs: [Tab]) {
+    fileprivate func setup(tabs: [PagedContentTab]) {
         buttons.forEach { $0.removeFromSuperview() }
         buttons.removeAll()
         contentWidth = 0
@@ -186,12 +213,18 @@ public class TabbedMenuView: UIView {
         }
         
         isHidden = false
-
+        
         updateSelectedButtons(newIndex: selectedIndex)
         moveBottomLine(from: buttons[selectedIndex], to: buttons[selectedIndex], animate: false)
+        
+        if theme.isFullWidth {
+            adjustButtonSizesForFullWidth()
+        }
     }
     
-    fileprivate func adjustButtonSizes() {
+    fileprivate func adjustButtonSizesForFullWidth() {
+        guard contentWidth < frame.width && !tabs.isEmpty else { return }
+        
         let buttonWidth = frame.width / CGFloat(buttons.count)
         buttons.forEach { button in
             guard let index = buttons.index(of: button) else { return }
@@ -204,8 +237,8 @@ public class TabbedMenuView: UIView {
         moveBottomLine(from: buttons[selectedIndex], to: buttons[selectedIndex], animate: false)
     }
     
-    fileprivate func setup(tab: Tab) {
-        let button = makeTabButton(withTitle: tab.title)
+    fileprivate func setup(tab: PagedContentTab) {
+        let button = makeTabButton(for: tab)
         
         var buttonFrame = button.frame
         
@@ -224,9 +257,9 @@ public class TabbedMenuView: UIView {
             var previouslySelectedButton = buttons[oldIndex]
             updateUI(for: &previouslySelectedButton, with: theme, selected: false)
         }
-
+        
         var selectedButton = buttons[newIndex]
-        updateUI(for: &selectedButton, with: theme, selected: true)
+        updateUI(for: &selectedButton, with: theme, index: newIndex, selected: true)
     }
     
     fileprivate func moveBottomLine(from fromButton: UIButton, to toButton: UIButton, animate: Bool) {
@@ -234,10 +267,13 @@ public class TabbedMenuView: UIView {
         let toFrame = frameForBottomLine(relativeTo: toButton)
         
         selectedBottomLine.frame = fromFrame
-        
+        moveBottomLine(toFrame: toFrame, animate: animate)
+    }
+    
+    fileprivate func moveBottomLine(toFrame frame: CGRect, animate: Bool) {
         let duration = animate ? 0.3 : 0
         UIView.animate(withDuration: duration) {
-            self.selectedBottomLine.frame = toFrame
+            self.selectedBottomLine.frame = frame
         }
     }
     
@@ -245,19 +281,32 @@ public class TabbedMenuView: UIView {
         var newFrame = selectedBottomLine.frame
         
         let linePadding: CGFloat = 5
-        newFrame.size.width = button.textWidth + linePadding * 2
+        newFrame.size.width = button.frame.width + linePadding * 2
         newFrame.centerX = button.frame.origin.x + button.frame.centerX
         
         return newFrame
     }
     
-    fileprivate func makeTabButton(withTitle title: String) -> UIButton {
+    fileprivate func makeTabButton(for tab: PagedContentTab) -> UIButton {
         var button = UIButton(type: .custom)
         
-        button.setTitle(title, for: .normal)
+        button.setTitle(tab.title, for: .normal)
+        
+        let imageRightPadding: CGFloat = 10
+        
+        let imageSize = tab.imageSize ?? (tab.image?.size ?? .zero)
+        
+        if let image = tab.image {
+            button.setImage(image.byScaling(to: imageSize), for: .normal)
+            button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: imageRightPadding)
+        }
         updateUI(for: &button, with: theme, selected: false)
         
-        let width = title.widthWithConstrainedHeight(height: frame.height, font: theme.font)
+        let imageWidth = imageSize.width > 0 ? imageSize.width + imageRightPadding : 0
+        
+        let textWidth = tab.title?.widthWithConstrainedHeight(height: frame.height, font: theme.font) ?? 0
+        
+        let width = textWidth + imageWidth
         let buttonFrame = CGRect(origin: CGPoint.zero, size: CGSize(width: width, height: frame.height))
         button.frame = buttonFrame
         
@@ -266,11 +315,14 @@ public class TabbedMenuView: UIView {
         return button
     }
     
-    fileprivate func updateUI(for button: inout UIButton, with theme: Theme, selected: Bool) {
-        let titleColor = selected ? theme.selectedColor : theme.textColor
+    fileprivate func updateUI(for button: inout UIButton, with theme: PagedContentTabTheme, index: Int = 0, selected: Bool) {
+        let selectedColor = theme.selectedColor ?? theme.selectedColors[index]
+        
+        let titleColor = selected ? selectedColor : theme.textColor
         
         button.setTitleColor(titleColor, for: .normal)
         button.titleLabel?.font = theme.font
+        selectedBottomLine.backgroundColor = selectedColor
     }
     
     @objc fileprivate func buttonSelected(_ button: UIButton) {
@@ -282,14 +334,14 @@ public class TabbedMenuView: UIView {
         controller.indexChanged(to: index)
     }
     
-    func select(index: Int) {
+    func select(index: Int, animated: Bool = true) {
         guard index < buttons.count else { return }
         
         updateSelectedButtons(newIndex: index, oldIndex: selectedIndex)
         let oldButton = buttons[selectedIndex]
         let newButton = buttons[index]
         
-        moveBottomLine(from: oldButton, to: newButton, animate: true)
+        moveBottomLine(from: oldButton, to: newButton, animate: animated)
         
         selectedIndex = index
         
@@ -299,7 +351,7 @@ public class TabbedMenuView: UIView {
         let rightAlign = newButtonRight > scrollView.contentOffset.x + frame.width
         
         if rightAlign || leftAlign {
-           scroll(to: newButton.frame, leftAlign: leftAlign)
+            scroll(to: newButton.frame, leftAlign: leftAlign)
         }
     }
     

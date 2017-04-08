@@ -52,6 +52,19 @@ extension NSAttributedString {
     }
 }
 
+extension UIImage {
+    
+    func byScaling(to newSize: CGSize) -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 0)
+        draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
+        
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
+    }
+}
+
 extension CGRect {
     var right: CGFloat {
         return origin.x + width

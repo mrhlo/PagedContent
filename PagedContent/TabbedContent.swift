@@ -4,12 +4,18 @@
 
 import UIKit
 
-protocol TabbedContentDelegate: class {
+public protocol TabbedContentDelegate: class {
     func tabbedViewDidScroll(_ scrollView: UIScrollView)
+    func tabbedViewDidScroll(toTabAt index: Int)
 }
 
-class TabbedContentViewController: UIViewController {
-    var views = [UIView]() {
+public extension TabbedContentDelegate {
+    func tabbedViewDidScroll(_ scrollView: UIScrollView) {}
+    func tabbedViewDidScroll(toTabAt index: Int) {}
+}
+
+public class TabbedContentViewController: UIViewController {
+    public var views = [UIView]() {
         didSet {
             tabbedContentView.setup(views: views)
         }
@@ -17,8 +23,14 @@ class TabbedContentViewController: UIViewController {
     
     let tabbedContentView: TabbedContentView
     
-    weak var menuController: TabController?
-    weak var delegate: TabbedContentDelegate?
+    public weak var menuController: TabController?
+    public weak var delegate: TabbedContentDelegate?
+    
+    var isScrollEnabled = true {
+        didSet {
+            tabbedContentView.scrollView.isScrollEnabled = isScrollEnabled
+        }
+    }
     
     var hasFullSizedContent: Bool {
         get {
@@ -37,18 +49,39 @@ class TabbedContentViewController: UIViewController {
         tabbedContentView.controller = self
     }
     
+    public init() {
+        tabbedContentView = TabbedContentView(frame: .zero)
+        
+        super.init(nibName: nil, bundle: nil)
+        
+        tabbedContentView.controller = self
+    }
+    
     override public func loadView() {
         view = tabbedContentView
+    }
+    
+    public func changeIndex(to index: Int, animated: Bool = true) {
+        guard tabbedContentView.numberOfTabs > index else { return }
+        
+        tabbedContentView.select(index: index)
+        indexChanged(to: index, animated: animated)
     }
 }
 
 extension TabbedContentViewController: TabController {
-    func select(index: Int) {
-        tabbedContentView.select(index: index)
+    public func select(index: Int, animated: Bool) {
+        tabbedContentView.select(index: index, animated: animated)
+        delegate?.tabbedViewDidScroll(toTabAt: index)
     }
     
-    func indexChanged(to index: Int) {
-        menuController?.select(index: index)
+    public func indexChanged(to index: Int) {
+        indexChanged(to: index, animated: true)
+    }
+    
+    func indexChanged(to index: Int, animated: Bool) {
+        menuController?.select(index: index, animated: animated)
+        delegate?.tabbedViewDidScroll(toTabAt: index)
     }
 }
 
@@ -62,6 +95,10 @@ class TabbedContentView: UIView {
     
     var selectedIndex = 0
     var hasFullSizeContent = true
+    
+    var numberOfTabs: Int {
+        return views.count
+    }
     
     var contentWidth: CGFloat {
         get {
@@ -107,7 +144,7 @@ class TabbedContentView: UIView {
         scrollView.delegate = self
         addSubview(scrollView)
     }
-
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         views.forEach { view in
@@ -152,8 +189,8 @@ class TabbedContentView: UIView {
         scrollView.addSubview(containerView)
     }
     
-    func select(index: Int) {
-        scrollView.setContentOffset(CGPoint(x: CGFloat(index) * frame.width, y: 0), animated: true)
+    func select(index: Int, animated: Bool = true) {
+        scrollView.setContentOffset(CGPoint(x: CGFloat(index) * frame.width, y: 0), animated: animated)
         selectedIndex = index
     }
 }
