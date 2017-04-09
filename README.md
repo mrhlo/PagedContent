@@ -1,7 +1,5 @@
 # PagedContent - iOS Implementation of Android's ViewPager
 
-## About
-
 PagedContent is an iOS implementation of Android's ViewPager. It allows to place content in "pages" in order to show one part of the content while hiding others. It uses a menu-based navigation to go through the different parts of the content.
 
 ## Usage
