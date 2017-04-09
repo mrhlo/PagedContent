@@ -64,8 +64,15 @@ You can also set multiple selected colors if you want different colors for diffe
 
 The height of the tab menu is by default 44 pts. You can change the height by changing the `menuHeight` property of the `PagedContentViewController`.
 
+## Requirements
+
+* iOS 8.0+
+* Xcode 8.0+
+
 ## TODO
 
 * Add additional styling options
 * Add setup option with view controllers for each content page instead of views
 * Add a contribution guide
+
+
