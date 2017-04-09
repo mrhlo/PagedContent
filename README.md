@@ -1,10 +1,10 @@
 # PagedContent - iOS Implementation of Android's ViewPager
 
-##About
+## About
 
 PagedContent is an iOS implementation of Android's ViewPager. It allows to place content in "pages" in order to show one part of the content while hiding others. It uses a menu-based navigation to go through the different parts of the content.
 
-##Usage
+## Usage
 
 The easiest way to use the component is to embed the `PagedContentViewController` in your view controller using a container view, or to initialize a `PagedContentViewController` in your parent view controller and adding it's view to your main view.
 
@@ -41,7 +41,7 @@ PagedContentTab(image: UIImage(named: "icon"),
 
 ```
 
-##Styling
+## Styling
 
 If you don't do any styling, the library will use the default theme for the menu which looks like the following:
 
