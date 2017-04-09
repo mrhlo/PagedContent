@@ -1,6 +1,6 @@
 //
-//  TabbedMenu.h
-//  TabbedMenu
+//  PagedContent.h
+//  PagedContent
 //
 //  Created by Halil Gursoy on 31/12/2016.
 //  Copyright © 2016 Halil. All rights reserved.

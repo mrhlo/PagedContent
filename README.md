@@ -1,6 +1,8 @@
-# PagedContent - iOS Implementation of Android's ViewPager
+# PagedContent - Easy to use library to display content with multiple sections
 
-PagedContent is an iOS implementation of Android's ViewPager. It allows to place content in "pages" in order to show one part of the content while hiding others. It uses a menu-based navigation to go through the different parts of the content.
+PagedContent is an iOS implementation of Android's ViewPager purely written in Swift. It allows to place content in "pages" in order to show one part of the content while hiding others. It uses a menu-based navigation to go through the different parts of the content.
+
+<img src="images/example-1.gif" width="300"/> <img src="images/example-2.gif" width="300"/> 
 
 ## Usage
 
@@ -25,8 +27,8 @@ To setup the tab menu with title and images you just have to pass an additional 
 
 ```swift
 PagedContentTab(title: title, 
-				image: UIImage(named: "icon"), 
-				view: view)
+image: UIImage(named: "icon"), 
+view: view)
 ```
 
 **Tabs only with image:**
@@ -38,6 +40,8 @@ PagedContentTab(image: UIImage(named: "icon"),
 				view: view)
 
 ```
+
+You can also set a custom size for the image by passing the `imageSize` parameter when initializing the `PagedContentTab` object, otherwise the size of the `UIImage` object will be used.
 
 ## Styling
 
@@ -53,7 +57,15 @@ You can change the styling of the menu using a `PagedContentTabTheme` object and
 * Border color (Set to clear if you don't want any borders)
 * Font
 * Selected Font (Default is the normal font)
-* Padding
+* Padding between tab buttons
 * Full width or not (setting to full width makes the buttons take up as many space as they can based on the width of the menu and the number of buttons)
 
+You can also set multiple selected colors if you want different colors for different tabs by passing a list of colors as the `selectedColors` parameter.
 
+The height of the tab menu is by default 44 pts. You can change the height by changing the `menuHeight` property of the `PagedContentViewController`.
+
+## TODO
+
+* Add additional styling options
+* Add setup option with view controllers for each content page instead of views
+* Add a contribution guide
