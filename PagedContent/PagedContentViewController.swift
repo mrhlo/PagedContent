@@ -37,6 +37,12 @@ public class PagedContentViewController: UIViewController {
         }
     }
     
+    public var isSwipingBetweenTabsEnabled = false {
+        didSet {
+            contentViewController?.isScrollEnabled = isSwipingBetweenTabsEnabled
+        }
+    }
+    
     public var menuView: UIView? {
         get {
             return menuViewController?.view

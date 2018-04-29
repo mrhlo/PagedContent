@@ -65,8 +65,7 @@ extension TabbedMenuViewController: TabController {
 public struct PagedContentTabTheme {
     let backgroundColor: UIColor
     let textColor: UIColor
-    let selectedColors: [UIColor]
-    let selectedColor: UIColor?
+    let selectedColors: [UIColor?]
     let font: UIFont
     let selectedFont: UIFont
     let buttonPadding: CGFloat
@@ -76,7 +75,7 @@ public struct PagedContentTabTheme {
     public static let defaultTheme: PagedContentTabTheme = PagedContentTabTheme(
         backgroundColor: .white,
         textColor: .lightGray,
-        selectedColor: .black,
+        selectedColors: [.black],
         font: UIFont.systemFont(ofSize: 14),
         selectedFont: UIFont.systemFont(ofSize: 14),
         buttonPadding: 30,
@@ -84,45 +83,24 @@ public struct PagedContentTabTheme {
         isFullWidth: false
     )
     
-    public init(backgroundColor: UIColor = PagedContentTabTheme.defaultTheme.backgroundColor,
-                textColor: UIColor = PagedContentTabTheme.defaultTheme.textColor,
-                selectedColor: UIColor = PagedContentTabTheme.defaultTheme.selectedColor!,
-                font: UIFont = PagedContentTabTheme.defaultTheme.font,
-                selectedFont: UIFont = PagedContentTabTheme.defaultTheme.font,
-                buttonPadding: CGFloat = PagedContentTabTheme.defaultTheme.buttonPadding,
-                borderColor: UIColor = PagedContentTabTheme.defaultTheme.borderColor,
-                isFullWidth: Bool = PagedContentTabTheme.defaultTheme.isFullWidth) {
+    public init(backgroundColor: UIColor? = nil,
+                textColor: UIColor? = nil,
+                selectedColors: [UIColor?] = [],
+                font: UIFont? = nil,
+                selectedFont: UIFont? = nil,
+                buttonPadding: CGFloat? = nil,
+                borderColor: UIColor? = nil,
+                isFullWidth: Bool? = nil) {
         
-        self.backgroundColor = backgroundColor
-        self.textColor = textColor
-        self.selectedColor = selectedColor
-        self.selectedColors = [selectedColor]
-        self.font = font
-        self.selectedFont = selectedFont
-        self.buttonPadding = buttonPadding
-        self.borderColor = borderColor
-        self.isFullWidth = isFullWidth
+        self.backgroundColor = backgroundColor ?? PagedContentTabTheme.defaultTheme.backgroundColor
+        self.textColor = textColor ?? PagedContentTabTheme.defaultTheme.textColor
+        self.selectedColors = !selectedColors.isEmpty ? selectedColors : PagedContentTabTheme.defaultTheme.selectedColors
+        self.font = font ??  PagedContentTabTheme.defaultTheme.font
+        self.selectedFont = selectedFont ?? PagedContentTabTheme.defaultTheme.font
+        self.buttonPadding = buttonPadding ?? PagedContentTabTheme.defaultTheme.buttonPadding
+        self.borderColor = borderColor ?? PagedContentTabTheme.defaultTheme.borderColor
+        self.isFullWidth = isFullWidth ?? PagedContentTabTheme.defaultTheme.isFullWidth
         
-    }
-    
-    public init(backgroundColor: UIColor = PagedContentTabTheme.defaultTheme.backgroundColor,
-                textColor: UIColor = PagedContentTabTheme.defaultTheme.textColor,
-                selectedColors: [UIColor],
-                font: UIFont = PagedContentTabTheme.defaultTheme.font,
-                selectedFont: UIFont = PagedContentTabTheme.defaultTheme.font,
-                buttonPadding: CGFloat = PagedContentTabTheme.defaultTheme.buttonPadding,
-                borderColor: UIColor = PagedContentTabTheme.defaultTheme.borderColor,
-                isFullWidth: Bool = PagedContentTabTheme.defaultTheme.isFullWidth) {
-        
-        self.backgroundColor = backgroundColor
-        self.textColor = textColor
-        self.selectedColors = selectedColors
-        self.font = font
-        self.selectedFont = selectedFont
-        self.buttonPadding = buttonPadding
-        self.borderColor = borderColor
-        self.selectedColor = nil
-        self.isFullWidth = isFullWidth
     }
 }
 
@@ -204,7 +182,7 @@ public class TabbedMenuView: UIView {
         layer.borderWidth = 0.5
         layer.borderColor = theme.borderColor.cgColor
         
-        selectedBottomLine.backgroundColor = theme.selectedColor
+        selectedBottomLine.backgroundColor = theme.selectedColors.first!
     }
     
     fileprivate func setup(tabs: [PagedContentTab]) {
@@ -328,7 +306,7 @@ public class TabbedMenuView: UIView {
     }
     
     fileprivate func updateUI(for button: inout UIButton, with theme: PagedContentTabTheme, index: Int = 0, selected: Bool) {
-        let selectedColor = theme.selectedColor ?? theme.selectedColors[index]
+        let selectedColor: UIColor? = theme.selectedColors.count == 1 ? theme.selectedColors.first! : theme.selectedColors[index]
         
         let titleColor = selected ? selectedColor : theme.textColor
         let font = selected ? theme.selectedFont : theme.font
